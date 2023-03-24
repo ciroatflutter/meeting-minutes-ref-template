@@ -26,7 +26,7 @@ jobs:
       - name: Create a new branch and push it
         run: |
           git checkout -b "meeting-$(date +'%Y-%m-%d')"
-          git config user.name "GitHub Actions"
-          git config user.email noreply@github.com
+          git config user.name "Meeting-Bot"
+          git config user.email ciro.miranda@flutter.com
           git push origin "meeting-$(date +'%Y-%m-%d')"
           
