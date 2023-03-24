@@ -29,6 +29,6 @@ jobs:
           git config user.email ciro.miranda@flutter.com
           git checkout -b "meeting-$(date +'%Y-%m-%d')"
           cp meeting-minutes-template.md meetings/meeting-$(date +'%Y-%m-%d').md
-          git commit -am "Meeting meeting-$(date +'%Y-%m-%d') created"
+          git add meetings/meeting-$(date +'%Y-%m-%d').md
+          git commit -m "Meeting meeting-$(date +'%Y-%m-%d') created"
           git push origin "meeting-$(date +'%Y-%m-%d')"
-
