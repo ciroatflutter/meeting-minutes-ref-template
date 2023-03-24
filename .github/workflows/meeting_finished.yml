@@ -1,0 +1,63 @@
+# This workflow archives the content and comments
+# of a closed GitHub issue in the meetings folder.
+# It sends a message to a Slack webhook url if configured.
+name: Meeting Notes - Meeting Finished
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    env:
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up file path
+        env:
+          ISSUE_CLOSED_AT: ${{ github.event.issue.closed_at }}
+        run: echo "FILE_PATH=meetings/meeting-${ISSUE_NUMBER}-$(date -d ${ISSUE_CLOSED_AT} +'%Y-%m-%d').md" >> $GITHUB_ENV
+      - name: Archive issue content
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: echo "${ISSUE_BODY}" > ${FILE_PATH}
+      - name: Add comments if they exist
+        if: github.event.issue.comments > 0
+        env:
+          GH_TOKEN: ${{ github.token }} # needed for GitHub CLI
+        run: |
+          echo "## Comments" >> ${FILE_PATH}
+          gh issue view ${ISSUE_NUMBER} -c --json comments --jq '.comments[] | "(" + .createdAt + ") @" + .author.login + ": " + .body + "\n"' >> ${FILE_PATH}
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add meetings
+          git commit -m "Meeting archived - ${FILE_PATH}"
+          git push
+
+  # Uses a slack workflow webhook to send a custom message
+  # using the a json config file at config/messages as a template
+  notify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      URL: ${{ github.event.issue.html_url }}
+      MEETING_NAME: ${{ vars.MEETING_NAME }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v3
+        # Replaces the URL and MEETING_NAME variables and send it to Slack
+      - name: Send custom JSON data to Slack workflow
+        if: env.SLACK_WEBHOOK_URL && env.MEETING_NAME && env.URL
+        run: |
+          jq --arg URL "$URL" --arg NAME "$MEETING_NAME" \
+          '.body |= sub("\\$URL";$URL) | .body |= sub("\\$NAME";$NAME)' \
+          config/messages/meeting_finished.json |\
+          curl -d @- -H "Content-Type: application/json" "${SLACK_WEBHOOK_URL}"
+

@@ -1,0 +1,40 @@
+# This workflow creates a GitHub issue from a template config file.
+# It sends a message to a Slack webhook url if configured.
+name: Meeting Notes - Agenda Open
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   # https://crontab.guru/#0_9_*_*_1
+  #   - cron:  '0 9 * * 1'
+
+jobs:
+  create_and_notify:
+    permissions:
+      issues: write
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Uses the ./config/meeting_minutes_template.md as a template
+      - name: Create a new issue from template
+        id: new_issue
+        env:
+          GH_TOKEN: ${{ github.token }} # needed for GitHub CLI
+        # After creating the issue it sets the url as a step output
+        run: |
+          echo "url=$(gh issue create --title "$(date +'%Y-%m-%d') - Meeting Minutes" --body-file ./config/meeting_minutes_template.md | grep -Eo 'https:\/\/github\.com.*')" >> $GITHUB_OUTPUT
+      # Uses a slack workflow webhook to send a custom message
+      # using the a json config file at config/messages as a template.
+      # Replaces the URL and MEETING_NAME variables and send it to Slack
+      - name: Send custom JSON data to Slack workflow
+        if: env.SLACK_WEBHOOK_URL && env.MEETING_NAME && env.URL
+        run: |
+          jq --arg URL "$URL" --arg NAME "$MEETING_NAME" \
+            '.body |= sub("\\$URL";$URL) | .body |= sub("\\$NAME";$NAME)' \
+            config/messages/agenda_open.json |\
+            curl -d @- -H "Content-Type: application/json" $SLACK_WEBHOOK_URL
+        env:
+          MEETING_NAME: ${{ vars.MEETING_NAME }}
+          URL: ${{ steps.new_issue.outputs.url }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
