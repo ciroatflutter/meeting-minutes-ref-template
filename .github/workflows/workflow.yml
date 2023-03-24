@@ -32,3 +32,4 @@ jobs:
           git add meetings/meeting-$(date +'%Y-%m-%d').md
           git commit -m "Meeting meeting-$(date +'%Y-%m-%d') created"
           git push origin "meeting-$(date +'%Y-%m-%d')"
+          gh pr create --base main --fill
