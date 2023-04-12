@@ -1,4 +1,4 @@
-<img src="assets/img/logo.svg" alt="User Group Logo" title="User Group Logo" align="right" height="60" />
+<img src="assets/img/logo.svg" alt="User Group Logo" title="User Group Logo" align="right" height="70" />
 
 # Example Forum Title
 > Small description of **what** this repository is used for.
