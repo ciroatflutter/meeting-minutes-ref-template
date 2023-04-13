@@ -7,7 +7,7 @@ This repository is using GitHub issues to manage meeting minutes.
 1. Go to `Settings > Actions` and update the **Workflow permissions** to **Read and write permissions**
 1. Go to `Secrets and variables > Actions` (_Required only if you want the Slack integration_)
 
-- Add a variable named `MEETING_NAME` with the value being what you want to call this meeting (e.g. Team Retro)
+- Add a _repository variable_ named `MEETING_NAME` with the value being what you want to call this meeting (e.g. Team Retro)
 - Add a secret named `SLACK_WEBHOOK_URL` with the Slack workflow webhook URL. It will be in the form `https://hooks.slack.com/workflows/....`
 
 ## Issues for meeting minutes
