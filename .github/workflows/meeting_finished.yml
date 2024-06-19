@@ -16,7 +16,7 @@ jobs:
     env:
       ISSUE_NUMBER: ${{ github.event.issue.number }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up file path
         env:
           ISSUE_CLOSED_AT: ${{ github.event.issue.closed_at }}
@@ -40,7 +40,7 @@ jobs:
           git commit -m "Meeting archived - ${FILE_PATH}"
           git push
 
-  # Uses a slack workflow webhook to send a custom message
+  # Uses a slack workflow webhook (needs to be created and configured) to send a custom message
   # using the a json config file at config/messages as a template
   notify:
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
       MEETING_NAME: ${{ vars.MEETING_NAME }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         # Replaces the URL and MEETING_NAME variables and send it to Slack
       - name: Send custom JSON data to Slack workflow
         if: env.SLACK_WEBHOOK_URL && env.MEETING_NAME && env.URL
