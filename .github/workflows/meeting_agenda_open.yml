@@ -4,9 +4,9 @@ name: Meeting Notes - Agenda Open
 
 on:
   workflow_dispatch:
-  # schedule:
-  #   # https://crontab.guru/#0_9_*_*_1 "At 09:00 on Monday."
-  #   - cron:  '0 9 * * 1'
+  schedule:
+    # https://crontab.guru/#0_15_*_*_4 "At 15:00 on Thursday."
+    - cron:  '0 15 * * 4'
 
 jobs:
   create_and_notify:
