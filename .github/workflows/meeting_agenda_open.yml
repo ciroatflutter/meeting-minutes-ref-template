@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Run on even week numbers
         if: ${{ vars.FORTNIGHTLY == 'true' }}
-        run: expr $(date +%W) % 2
+        run: exit $(expr $(date +%W) % 2)
       - name: Why it failed
         if: ${{ failure() }}
         run: echo "Should not run on odd week numbers (week $(date +%W))"
