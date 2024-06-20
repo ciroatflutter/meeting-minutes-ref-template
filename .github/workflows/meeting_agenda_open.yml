@@ -28,7 +28,7 @@ jobs:
       # Uses the ./config/meeting_minutes_template.md as a template
       - name: Create a new issue from template
         id: new_issue
-        if: steps.fortnightly.outputs.execute == 0 || vars.FORTNIGHTLY != 'true'
+        if: vars.FORTNIGHTLY != 'true' || steps.fortnightly.outputs.execute == 0
         env:
           GH_TOKEN: ${{ github.token }} # needed for GitHub CLI
         # After creating the issue it sets the url as a step output
