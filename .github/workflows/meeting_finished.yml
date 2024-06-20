@@ -50,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: archive
     env:
       URL: ${{ github.event.issue.html_url }}
       MEETING_NAME: ${{ vars.MEETING_NAME }}
