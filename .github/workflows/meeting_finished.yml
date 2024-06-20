@@ -17,6 +17,10 @@ jobs:
       ISSUE_NUMBER: ${{ github.event.issue.number }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Default input is the SHA that initially triggered the workflow. As we might create a new commit in the previous job,
+          # to ensure we get the latest commit we use the ref for checkout: 'refs/heads/<branch_name>'
+          ref: ${{ github.ref }}
       - name: Set up file path
         env:
           ISSUE_CLOSED_AT: ${{ github.event.issue.closed_at }}
