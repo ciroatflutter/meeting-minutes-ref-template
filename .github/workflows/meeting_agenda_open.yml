@@ -8,27 +8,30 @@ on:
   #   # https://crontab.guru/#0_9_*_*_1 "At 09:00 on Monday."
   #   - cron:  '0 9 * * 1'
 
+env:
+  # values: (1,2)
+  # 1 - runs on odd week numbers
+  # 2 - runs on even week numbers
+  week_parity: 2
+
 jobs:
-  fortnightly:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run on even week numbers
-        if: ${{ vars.FORTNIGHTLY == 'true' }}
-        run: exit $(expr $(date +%W) % 2)
-      - name: Why it failed
-        if: ${{ failure() }}
-        run: echo "Should not run on odd week numbers (week $(date +%W))"
   create_and_notify:
     permissions:
       issues: write
       contents: write
     runs-on: ubuntu-latest
-    needs: fortnightly
     steps:
       - uses: actions/checkout@v4
+      - name: Fortnightly check
+        id: fortnightly
+        if: ${{ vars.FORTNIGHTLY == 'true' }}
+        run: echo "execute=$(expr $(date +%W) % ${PARITY})" >> $GITHUB_OUTPUT
+        env:
+          PARITY: ${{ env.week_parity }}
       # Uses the ./config/meeting_minutes_template.md as a template
       - name: Create a new issue from template
         id: new_issue
+        if: steps.fortnightly.outputs.execute == 0 || vars.FORTNIGHTLY != 'true'
         env:
           GH_TOKEN: ${{ github.token }} # needed for GitHub CLI
         # After creating the issue it sets the url as a step output
