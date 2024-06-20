@@ -24,7 +24,7 @@ jobs:
           # values: (1,2)
           # 1 - runs on odd week numbers
           # 2 - runs on even week numbers
-          PARITY: 2
+          PARITY: ${{ vars.FORTNIGHTLY_PARITY }}
       # Uses the ./config/meeting_minutes_template.md as a template
       - name: Create a new issue from template
         id: new_issue
