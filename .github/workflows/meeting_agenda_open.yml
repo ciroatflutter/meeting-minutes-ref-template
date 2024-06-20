@@ -8,12 +8,6 @@ on:
   #   # https://crontab.guru/#0_9_*_*_1 "At 09:00 on Monday."
   #   - cron:  '0 9 * * 1'
 
-env:
-  # values: (1,2)
-  # 1 - runs on odd week numbers
-  # 2 - runs on even week numbers
-  week_parity: 2
-
 jobs:
   create_and_notify:
     permissions:
@@ -27,7 +21,10 @@ jobs:
         if: ${{ vars.FORTNIGHTLY == 'true' }}
         run: echo "execute=$(expr $(date +%W) % ${PARITY})" >> $GITHUB_OUTPUT
         env:
-          PARITY: ${{ env.week_parity }}
+          # values: (1,2)
+          # 1 - runs on odd week numbers
+          # 2 - runs on even week numbers
+          PARITY: 2
       # Uses the ./config/meeting_minutes_template.md as a template
       - name: Create a new issue from template
         id: new_issue
